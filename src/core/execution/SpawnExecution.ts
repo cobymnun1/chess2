@@ -104,22 +104,23 @@ export class SpawnExecution implements Execution {
       if (player.type() === PlayerType.Bot) {
         this.mg.addExecution(new TribeExecution(player));
       }
+      // Grid: one chess army per human, only on first spawn.
+      if (
+        this.playerInfo.playerType === PlayerType.Human &&
+        this.mg.config().gameConfig().gameMap === GameMapType.Grid &&
+        this.tile !== undefined
+      ) {
+        const { originCx, originCy } = chessBoardOriginFromTile(
+          this.mg,
+          spawn.center,
+        );
+        this.mg.addExecution(
+          new ChessSetupExecution(player, originCx, originCy),
+        );
+      }
     }
 
     player.setSpawnTile(spawn.center);
-
-    // Grid map: human spawn places a chess army instead of a bare land blob.
-    if (
-      this.playerInfo.playerType === PlayerType.Human &&
-      this.mg.config().gameConfig().gameMap === GameMapType.Grid &&
-      this.tile !== undefined
-    ) {
-      const { originCx, originCy } = chessBoardOriginFromTile(
-        this.mg,
-        spawn.center,
-      );
-      this.mg.addExecution(new ChessSetupExecution(player, originCx, originCy));
-    }
 
     if (
       this.mg.config().gameConfig().gameType === GameType.Singleplayer &&

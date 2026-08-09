@@ -359,8 +359,19 @@ export function legalMovesForPiece(
   const type = unit.type() as ChessPieceUnitType;
 
   switch (type) {
-    case UnitType.SAMLauncher: // Pawn — any direction, Chebyshev ≤ 3
-      return chebyshevMoves(mg, ownerId, from, CHESS_MOVE_RANGE.pawn);
+    case UnitType.SAMLauncher: // Pawn — orthogonal only, up to range
+      return slideMoves(
+        mg,
+        ownerId,
+        from,
+        [
+          [1, 0],
+          [-1, 0],
+          [0, 1],
+          [0, -1],
+        ],
+        CHESS_MOVE_RANGE.pawn,
+      );
     case UnitType.City: // King — any direction, Chebyshev ≤ 3
       return chebyshevMoves(mg, ownerId, from, CHESS_MOVE_RANGE.king);
     case UnitType.Port: // Rook
@@ -423,6 +434,19 @@ export function isLegalMove(
   );
 }
 
+/**
+ * Truncate a path so it ends at the first cell matching hover (inclusive).
+ * If hover is not in the path, return the path unchanged.
+ */
+export function truncatePathAt(
+  path: ChessCell[],
+  hover: ChessCell,
+): ChessCell[] {
+  const idx = path.findIndex((c) => c.cx === hover.cx && c.cy === hover.cy);
+  if (idx < 0) return path;
+  return path.slice(0, idx + 1);
+}
+
 /** Intermediate cells between from and to for sliding pieces (exclusive).
  *  Returns [] for leaps (knight) and non-slide moves — never loops forever.
  */
@@ -448,18 +472,14 @@ export function pathCells(from: ChessCell, to: ChessCell): ChessCell[] {
   return cells;
 }
 
-/** Verify sliding path is clear (knight/king/pawn skip). */
+/** Verify sliding path is clear (knight/king leap-style skip). */
 export function slidingPathClear(
   mg: ChessBoardView,
   unit: ChessPieceRef,
   to: ChessCell,
 ): boolean {
   const type = unit.type();
-  if (
-    type === UnitType.MissileSilo ||
-    type === UnitType.City ||
-    type === UnitType.SAMLauncher
-  ) {
+  if (type === UnitType.MissileSilo || type === UnitType.City) {
     return true;
   }
   const from = tileToCell(mg, unit.tile());

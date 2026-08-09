@@ -3,6 +3,7 @@ import {
   Cell,
   Execution,
   Game,
+  GameMapType,
   Player,
   PlayerType,
   Structures,
@@ -15,6 +16,7 @@ import {
   TileTraversalScratch,
 } from "../game/TileTraversalScratch";
 import { calculateBoundingBox, getMode, inscribed, simpleHash } from "../Util";
+import { isChessPieceType } from "../chess/ChessConstants";
 
 export class PlayerExecution implements Execution {
   private readonly ticksPerClusterCalc = 20;
@@ -44,8 +46,16 @@ export class PlayerExecution implements Execution {
 
   tick(ticks: number) {
     this.player.decayRelations();
+    const isGrid =
+      this.mg.config().gameConfig().gameMap === GameMapType.Grid;
+
     for (const u of this.player.units()) {
       if (!Structures.has(u.type())) {
+        continue;
+      }
+
+      // Chess 2: pieces never change hands via tile ownership / cluster absorb.
+      if (isGrid && isChessPieceType(u.type())) {
         continue;
       }
 
@@ -105,6 +115,11 @@ export class PlayerExecution implements Execution {
       ) {
         this.player.stopEmbargo(embargo.target);
       }
+    }
+
+    // Chess 2: no surrounded-cluster territory absorption (steals neighbor pieces).
+    if (isGrid) {
+      return;
     }
 
     if (

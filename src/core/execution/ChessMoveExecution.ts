@@ -43,6 +43,44 @@ export function chessPieceCooldownRemaining(
   );
 }
 
+/** Delete every enemy chess piece on a cell; unregister from their army.
+ *  Returns false if another friendly piece occupies the square (no stacking).
+ */
+function clearChessCell(
+  mg: Game,
+  cx: number,
+  cy: number,
+  opts: {
+    exceptUnitId?: number;
+    capturer?: Player;
+  } = {},
+): boolean {
+  const onCell = mg.units().filter((u) => {
+    if (!u.isActive() || !isChessPieceType(u.type())) return false;
+    if (opts.exceptUnitId !== undefined && u.id() === opts.exceptUnitId) {
+      return false;
+    }
+    const c = tileToCell(mg, u.tile());
+    return c.cx === cx && c.cy === cy;
+  });
+
+  if (
+    opts.capturer &&
+    onCell.some((u) => u.owner().id() === opts.capturer!.id())
+  ) {
+    return false;
+  }
+
+  for (const u of onCell) {
+    const rec = getChessPieceByUnitId(u.owner().id(), u.id());
+    if (rec) {
+      unregisterChessPiece(u.owner().id(), rec.pieceId);
+    }
+    u.delete(false);
+  }
+  return true;
+}
+
 export class ChessMoveExecution implements Execution {
   private active = true;
 
@@ -72,7 +110,11 @@ export class ChessMoveExecution implements Execution {
     const unit = this.owner
       .units()
       .find((u) => u.id() === rec.unitId && u.isActive());
-    if (!unit || !isChessPieceType(unit.type()) || unit.type() !== rec.unitType) {
+    if (
+      !unit ||
+      !isChessPieceType(unit.type()) ||
+      unit.type() !== rec.unitType
+    ) {
       console.warn(`ChessMoveExecution: unit ${this.unitId} not a chess piece`);
       this.active = false;
       return;
@@ -93,19 +135,19 @@ export class ChessMoveExecution implements Execution {
 
     const from = tileToCell(mg, unit.tile());
 
-    // Capture enemy piece on destination.
-    const enemy = mg.units().find((u) => {
-      if (!u.isActive() || !isChessPieceType(u.type())) return false;
-      if (u.owner().id() === this.owner.id()) return false;
-      const c = tileToCell(mg, u.tile());
-      return c.cx === dest.cx && c.cy === dest.cy;
-    });
-    if (enemy) {
-      const enemyRec = getChessPieceByUnitId(enemy.owner().id(), enemy.id());
-      if (enemyRec) {
-        unregisterChessPiece(enemy.owner().id(), enemyRec.pieceId);
-      }
-      enemy.delete(true, this.owner);
+    // Capture: any enemy chess piece on dest is removed from play + registry.
+    // Refuse if another friendly piece already sits there (no stacking).
+    if (
+      !clearChessCell(mg, dest.cx, dest.cy, {
+        exceptUnitId: unit.id(),
+        capturer: this.owner,
+      })
+    ) {
+      console.warn(
+        `ChessMoveExecution: destination occupied by friendly piece`,
+      );
+      this.active = false;
+      return;
     }
 
     // Chess 2: territory is only the square under the piece (no blob expand).
@@ -124,6 +166,9 @@ export class ChessMoveExecution implements Execution {
     // Teleport: delete + rebuild so structure sprites relocate.
     const pieceType = rec.unitType;
     unit.delete(false);
+
+    // Belt-and-suspenders: dest must be empty of chess pieces before rebuild.
+    clearChessCell(mg, dest.cx, dest.cy, { capturer: this.owner });
 
     const cost = mg.unitInfo(pieceType).cost(mg, this.owner);
     this.owner.addGold(cost);

@@ -12,6 +12,7 @@ import {
   knightLeapOffsets,
   knightLPath,
   legalMovesForPiece,
+  truncatePathAt,
 } from "../src/core/chess/ChessMoves";
 import { UnitType } from "../src/core/game/Game";
 import { TileRef } from "../src/core/game/GameMap";
@@ -120,6 +121,29 @@ describe("bestKnightLanding aim-snap", () => {
   });
 });
 
+describe("truncatePathAt", () => {
+  const path: ChessCell[] = [
+    { cx: 1, cy: 0 },
+    { cx: 2, cy: 0 },
+    { cx: 3, cy: 0 },
+  ];
+
+  test("truncates through matching hover cell", () => {
+    expect(truncatePathAt(path, { cx: 2, cy: 0 })).toEqual([
+      { cx: 1, cy: 0 },
+      { cx: 2, cy: 0 },
+    ]);
+  });
+
+  test("returns full path when hover is last cell", () => {
+    expect(truncatePathAt(path, { cx: 3, cy: 0 })).toEqual(path);
+  });
+
+  test("returns path unchanged when hover is not on path", () => {
+    expect(truncatePathAt(path, { cx: 9, cy: 9 })).toEqual(path);
+  });
+});
+
 describe("knightLPath", () => {
   test("horizontal-first elbow", () => {
     const path = knightLPath(
@@ -145,15 +169,18 @@ describe("knightLPath", () => {
 describe("legalMovesForPiece ranges", () => {
   const board = makeBoard(40, 40);
 
-  test("pawn Chebyshev range is 3", () => {
+  test("pawn is orthogonal only up to range 3", () => {
     const pawn = pieceAt(board, UnitType.SAMLauncher, 20, 20);
     const moves = legalMovesForPiece(board, pawn);
-    expect(moves.length).toBe(7 * 7 - 1); // Chebyshev ≤3 → 7×7 minus origin
+    expect(moves.length).toBe(CHESS_MOVE_RANGE.pawn * 4);
     for (const m of moves) {
-      const d = Math.max(Math.abs(m.cx - 20), Math.abs(m.cy - 20));
-      expect(d).toBeGreaterThan(0);
-      expect(d).toBeLessThanOrEqual(CHESS_MOVE_RANGE.pawn);
+      const dx = Math.abs(m.cx - 20);
+      const dy = Math.abs(m.cy - 20);
+      expect(dx === 0 || dy === 0).toBe(true);
+      expect(dx + dy).toBeGreaterThan(0);
+      expect(dx + dy).toBeLessThanOrEqual(CHESS_MOVE_RANGE.pawn);
     }
+    expect(moves.some((m) => m.cx === 21 && m.cy === 21)).toBe(false);
   });
 
   test("king Chebyshev range is 3", () => {

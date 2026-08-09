@@ -3,10 +3,12 @@ import {
   CHESS_BOARD_SIZE,
   CHESS_CELL,
   ChessPieceUnitType,
+  isChessPieceType,
 } from "../chess/ChessConstants";
-import { cellCenterTile, tilesInCell } from "../chess/ChessMoves";
+import { cellCenterTile, tileToCell, tilesInCell } from "../chess/ChessMoves";
 import {
   clearChessArmy,
+  listChessPieces,
   registerChessPiece,
 } from "../chess/ChessPieceRegistry";
 import { Execution, Game, Player, Unit, UnitType } from "../game/Game";
@@ -71,6 +73,23 @@ export class ChessSetupExecution implements Execution {
       return;
     }
 
+    // Idempotent: never place a second army for the same player.
+    if (listChessPieces(this.player.id()).length > 0) {
+      const live = this.player
+        .units()
+        .filter((u) => u.isActive() && isChessPieceType(u.type()));
+      if (live.length > 0) {
+        this.active = false;
+        return;
+      }
+    }
+
+    // Remove any leftover chess structures from a prior bad setup.
+    for (const u of [...this.player.units()]) {
+      if (u.isActive() && isChessPieceType(u.type())) {
+        u.delete(false);
+      }
+    }
     clearChessArmy(this.player.id());
     this.nextPieceId = 0;
 
@@ -94,6 +113,15 @@ export class ChessSetupExecution implements Execution {
     for (const t of tilesInCell(this.mg, cx, cy)) {
       if (this.mg.owner(t) !== this.player) {
         this.player.conquer(t);
+      }
+    }
+
+    // No stacking: clear any units already on this chess cell.
+    for (const u of [...this.mg.units()]) {
+      if (!u.isActive() || !isChessPieceType(u.type())) continue;
+      const c = tileToCell(this.mg, u.tile());
+      if (c.cx === cx && c.cy === cy) {
+        u.delete(false);
       }
     }
 
