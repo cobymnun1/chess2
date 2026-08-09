@@ -46,6 +46,7 @@ export type Intent =
   | EmbargoIntent
   | QuickChatIntent
   | MoveWarshipIntent
+  | MoveChessPieceIntent
   | MarkDisconnectedIntent
   | EmbargoAllIntent
   | UpgradeStructureIntent
@@ -74,6 +75,7 @@ export type UpgradeStructureIntent = z.infer<
   typeof UpgradeStructureIntentSchema
 >;
 export type MoveWarshipIntent = z.infer<typeof MoveWarshipIntentSchema>;
+export type MoveChessPieceIntent = z.infer<typeof MoveChessPieceIntentSchema>;
 export type QuickChatIntent = z.infer<typeof QuickChatIntentSchema>;
 export type MarkDisconnectedIntent = z.infer<
   typeof MarkDisconnectedIntentSchema
@@ -545,6 +547,12 @@ export const MoveWarshipIntentSchema = z.object({
   tile: z.number().int().nonnegative(),
 });
 
+export const MoveChessPieceIntentSchema = z.object({
+  type: z.literal("move_chess_piece"),
+  unitId: z.number().int().nonnegative(),
+  tile: z.number().int().nonnegative(),
+});
+
 export const DeleteUnitIntentSchema = z.object({
   type: z.literal("delete_unit"),
   unitId: z.number().int().nonnegative(),
@@ -605,6 +613,7 @@ export const IntentSchema = z.discriminatedUnion("type", [
   EmbargoIntentSchema,
   EmbargoAllIntentSchema,
   MoveWarshipIntentSchema,
+  MoveChessPieceIntentSchema,
   QuickChatIntentSchema,
   AllianceExtensionIntentSchema,
   DeleteUnitIntentSchema,

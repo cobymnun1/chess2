@@ -116,6 +116,7 @@ const WATER_NUKES_BOOSTED_MAPS: ReadonlySet<GameMapType> = new Set([
 const FULL_LAND_MAPS: ReadonlySet<GameMapType> = new Set([
   GameMapType.TheBox,
   GameMapType.Alps,
+  GameMapType.Grid,
 ]);
 
 // Modifiers that cannot be active at the same time.

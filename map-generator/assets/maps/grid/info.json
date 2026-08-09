@@ -1,0 +1,169 @@
+{
+  "id": "Grid",
+  "name": "Grid",
+  "translation_key": "map.grid",
+  "categories": ["arcade", "new"],
+  "multiplayer_frequency": 2,
+  "nations": [
+    {
+      "coordinates": [16, 16],
+      "name": "Alpha Square",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 80],
+      "name": "Beta Square",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 144],
+      "name": "Gamma Square",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 208],
+      "name": "Delta Square",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 272],
+      "name": "Epsilon Cell",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 336],
+      "name": "Zeta Cell",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 400],
+      "name": "Eta Cell",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 464],
+      "name": "Theta Cell",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 528],
+      "name": "Iota Block",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 592],
+      "name": "Kappa Block",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 656],
+      "name": "Lambda Block",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 720],
+      "name": "Mu Block",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 784],
+      "name": "Nu Tile",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 848],
+      "name": "Xi Tile",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 912],
+      "name": "Omicron Tile",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 976],
+      "name": "Pi Tile",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1040],
+      "name": "Rho Field",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1104],
+      "name": "Sigma Field",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1168],
+      "name": "Tau Field",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1232],
+      "name": "Upsilon Field",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1296],
+      "name": "Phi Zone",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1360],
+      "name": "Chi Zone",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1424],
+      "name": "Psi Zone",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1488],
+      "name": "Omega Zone",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1552],
+      "name": "Check One",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1616],
+      "name": "Check Two",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1680],
+      "name": "Check Three",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1744],
+      "name": "Check Four",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1808],
+      "name": "Board Edge",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1872],
+      "name": "Pixel Coast",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 1936],
+      "name": "Mono March",
+      "flag": ""
+    },
+    {
+      "coordinates": [16, 2000],
+      "name": "Final Square",
+      "flag": ""
+    }
+  ]
+}

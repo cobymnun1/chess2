@@ -861,7 +861,8 @@ export class SinglePlayerModal extends BaseModal {
               playerTeams: this.teamCount,
               difficulty: this.selectedDifficulty,
               maxTimerValue: finalMaxTimerValue,
-              bots: this.bots,
+              // Chess 2 (Grid): force empty opponents — solo sandbox only.
+              bots: this.selectedMap === GameMapType.Grid ? 0 : this.bots,
               infiniteGold: this.infiniteGold,
               donateGold: this.gameMode === GameMode.Team,
               donateTroops: this.gameMode === GameMode.Team,
@@ -871,10 +872,13 @@ export class SinglePlayerModal extends BaseModal {
               disabledUnits: this.disabledUnits
                 .map((u) => Object.values(UnitType).find((ut) => ut === u))
                 .filter((ut): ut is UnitType => ut !== undefined),
-              nations: sliderToNationsConfig(
-                this.nations,
-                this.defaultNationCount,
-              ),
+              nations:
+                this.selectedMap === GameMapType.Grid
+                  ? "disabled"
+                  : sliderToNationsConfig(
+                      this.nations,
+                      this.defaultNationCount,
+                    ),
               ...(this.goldMultiplier && this.goldMultiplierValue
                 ? { goldMultiplier: this.goldMultiplierValue }
                 : {}),

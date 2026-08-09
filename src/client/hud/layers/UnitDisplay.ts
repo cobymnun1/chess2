@@ -15,17 +15,13 @@ import { UIState } from "../../UIState";
 import { renderNumber, translateText } from "../../Utils";
 import { GameView } from "../../view";
 import {
-  atomBombIcon,
   cityIcon,
   defensePostIcon,
   factoryIcon,
   goldCoinIcon,
-  hydrogenBombIcon,
-  mirvIcon,
   missileSiloIcon,
   portIcon,
   samLauncherIcon,
-  warshipIcon,
 } from "../HotbarIcons";
 
 @customElement("unit-display")
@@ -36,7 +32,6 @@ export class UnitDisplay extends LitElement implements Controller {
   private playerBuildables: BuildableUnit[] | null = null;
   private keybinds: Record<string, { value: string; key: string }> = {};
   private _cities = 0;
-  private _warships = 0;
   private _factories = 0;
   private _missileSilo = 0;
   private _port = 0;
@@ -101,7 +96,6 @@ export class UnitDisplay extends LitElement implements Controller {
     this._defensePost = player.totalUnitLevels(UnitType.DefensePost);
     this._samLauncher = player.totalUnitLevels(UnitType.SAMLauncher);
     this._factories = player.totalUnitLevels(UnitType.Factory);
-    this._warships = player.totalUnitLevels(UnitType.Warship);
     this.requestUpdate();
   }
 
@@ -164,34 +158,6 @@ export class UnitDisplay extends LitElement implements Controller {
             "sam_launcher",
             this.keybinds["buildSamLauncher"]?.key ?? "6",
           )}
-          ${this.renderUnitItem(
-            warshipIcon,
-            this._warships,
-            UnitType.Warship,
-            "warship",
-            this.keybinds["buildWarship"]?.key ?? "7",
-          )}
-          ${this.renderUnitItem(
-            atomBombIcon,
-            null,
-            UnitType.AtomBomb,
-            "atom_bomb",
-            this.keybinds["buildAtomBomb"]?.key ?? "8",
-          )}
-          ${this.renderUnitItem(
-            hydrogenBombIcon,
-            null,
-            UnitType.HydrogenBomb,
-            "hydrogen_bomb",
-            this.keybinds["buildHydrogenBomb"]?.key ?? "9",
-          )}
-          ${this.renderUnitItem(
-            mirvIcon,
-            null,
-            UnitType.MIRV,
-            "mirv",
-            this.keybinds["buildMIRV"]?.key ?? "0",
-          )}
         </div>
       </div>
     `;
@@ -239,13 +205,6 @@ export class UnitDisplay extends LitElement implements Controller {
                 <div class="p-2">
                   ${translateText("build_menu.desc." + structureKey)}
                 </div>
-                ${unitType === UnitType.Warship
-                  ? html`<div
-                      class="mt-1 px-2 py-1 text-[10px] text-cyan-300 border-t border-white/10"
-                    >
-                      ⇧ ${translateText("build_menu.warship_shift_hint")}
-                    </div>`
-                  : null}
                 <div class="flex items-center justify-center gap-1">
                   <img src=${goldCoinIcon} width="13" height="13" />
                   <span class="text-yellow-300"

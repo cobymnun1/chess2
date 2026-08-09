@@ -1,6 +1,7 @@
 import {
   Execution,
   Game,
+  GameMapType,
   GameType,
   Player,
   PlayerInfo,
@@ -11,6 +12,11 @@ import { TileRef } from "../game/GameMap";
 import { PseudoRandom } from "../PseudoRandom";
 import { GameID } from "../Schemas";
 import { simpleHash } from "../Util";
+import {
+  chessArmyTiles,
+  chessBoardOriginFromTile,
+  ChessSetupExecution,
+} from "./ChessSetupExecution";
 import { PlayerExecution } from "./PlayerExecution";
 import { TribeExecution } from "./TribeExecution";
 import { getSpawnTiles } from "./Util";
@@ -102,6 +108,19 @@ export class SpawnExecution implements Execution {
 
     player.setSpawnTile(spawn.center);
 
+    // Grid map: human spawn places a chess army instead of a bare land blob.
+    if (
+      this.playerInfo.playerType === PlayerType.Human &&
+      this.mg.config().gameConfig().gameMap === GameMapType.Grid &&
+      this.tile !== undefined
+    ) {
+      const { originCx, originCy } = chessBoardOriginFromTile(
+        this.mg,
+        spawn.center,
+      );
+      this.mg.addExecution(new ChessSetupExecution(player, originCx, originCy));
+    }
+
     if (
       this.mg.config().gameConfig().gameType === GameType.Singleplayer &&
       this.playerInfo.playerType === PlayerType.Human
@@ -122,6 +141,22 @@ export class SpawnExecution implements Execution {
 
   private getSpawn(center?: TileRef): Spawn | undefined {
     if (center !== undefined) {
+      // Grid chess: own only the squares under the starting army (not a land blob).
+      if (
+        this.playerInfo.playerType === PlayerType.Human &&
+        this.mg.config().gameConfig().gameMap === GameMapType.Grid
+      ) {
+        const { originCx, originCy } = chessBoardOriginFromTile(
+          this.mg,
+          center,
+        );
+        const tiles = chessArmyTiles(this.mg, originCx, originCy);
+        if (!tiles.length) {
+          return;
+        }
+        return { center, tiles };
+      }
+
       const tiles = getSpawnTiles(this.mg, center, false);
 
       if (!tiles.length) {

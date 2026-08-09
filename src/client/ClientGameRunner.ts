@@ -14,6 +14,7 @@ import {
 import { createPartialGameRecord, findClosestBy, replacer } from "../core/Util";
 import {
   BuildableUnit,
+  GameMapType,
   PlayerType,
   Structures,
   UnitType,
@@ -1065,6 +1066,10 @@ export class ClientGameRunner {
       return;
     }
     if (this.gameView.inSpawnPhase()) {
+      return;
+    }
+    // Chess 2 (Grid): no OpenFront land/boat attacks — pieces move via ChessMoveController.
+    if (this.gameView.config().gameConfig().gameMap === GameMapType.Grid) {
       return;
     }
     if (this.myPlayer === null) {

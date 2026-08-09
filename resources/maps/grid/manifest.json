@@ -1,0 +1,283 @@
+{
+  "categories": [
+    "arcade",
+    "new"
+  ],
+  "id": "Grid",
+  "map": {
+    "height": 2048,
+    "num_land_tiles": 4194304,
+    "width": 2048
+  },
+  "map16x": {
+    "height": 512,
+    "num_land_tiles": 262144,
+    "width": 512
+  },
+  "map4x": {
+    "height": 1024,
+    "num_land_tiles": 1048576,
+    "width": 1024
+  },
+  "multiplayer_frequency": 2,
+  "name": "Grid",
+  "nations": [
+    {
+      "coordinates": [
+        16,
+        16
+      ],
+      "flag": "",
+      "name": "Alpha Square"
+    },
+    {
+      "coordinates": [
+        16,
+        80
+      ],
+      "flag": "",
+      "name": "Beta Square"
+    },
+    {
+      "coordinates": [
+        16,
+        144
+      ],
+      "flag": "",
+      "name": "Gamma Square"
+    },
+    {
+      "coordinates": [
+        16,
+        208
+      ],
+      "flag": "",
+      "name": "Delta Square"
+    },
+    {
+      "coordinates": [
+        16,
+        272
+      ],
+      "flag": "",
+      "name": "Epsilon Cell"
+    },
+    {
+      "coordinates": [
+        16,
+        336
+      ],
+      "flag": "",
+      "name": "Zeta Cell"
+    },
+    {
+      "coordinates": [
+        16,
+        400
+      ],
+      "flag": "",
+      "name": "Eta Cell"
+    },
+    {
+      "coordinates": [
+        16,
+        464
+      ],
+      "flag": "",
+      "name": "Theta Cell"
+    },
+    {
+      "coordinates": [
+        16,
+        528
+      ],
+      "flag": "",
+      "name": "Iota Block"
+    },
+    {
+      "coordinates": [
+        16,
+        592
+      ],
+      "flag": "",
+      "name": "Kappa Block"
+    },
+    {
+      "coordinates": [
+        16,
+        656
+      ],
+      "flag": "",
+      "name": "Lambda Block"
+    },
+    {
+      "coordinates": [
+        16,
+        720
+      ],
+      "flag": "",
+      "name": "Mu Block"
+    },
+    {
+      "coordinates": [
+        16,
+        784
+      ],
+      "flag": "",
+      "name": "Nu Tile"
+    },
+    {
+      "coordinates": [
+        16,
+        848
+      ],
+      "flag": "",
+      "name": "Xi Tile"
+    },
+    {
+      "coordinates": [
+        16,
+        912
+      ],
+      "flag": "",
+      "name": "Omicron Tile"
+    },
+    {
+      "coordinates": [
+        16,
+        976
+      ],
+      "flag": "",
+      "name": "Pi Tile"
+    },
+    {
+      "coordinates": [
+        16,
+        1040
+      ],
+      "flag": "",
+      "name": "Rho Field"
+    },
+    {
+      "coordinates": [
+        16,
+        1104
+      ],
+      "flag": "",
+      "name": "Sigma Field"
+    },
+    {
+      "coordinates": [
+        16,
+        1168
+      ],
+      "flag": "",
+      "name": "Tau Field"
+    },
+    {
+      "coordinates": [
+        16,
+        1232
+      ],
+      "flag": "",
+      "name": "Upsilon Field"
+    },
+    {
+      "coordinates": [
+        16,
+        1296
+      ],
+      "flag": "",
+      "name": "Phi Zone"
+    },
+    {
+      "coordinates": [
+        16,
+        1360
+      ],
+      "flag": "",
+      "name": "Chi Zone"
+    },
+    {
+      "coordinates": [
+        16,
+        1424
+      ],
+      "flag": "",
+      "name": "Psi Zone"
+    },
+    {
+      "coordinates": [
+        16,
+        1488
+      ],
+      "flag": "",
+      "name": "Omega Zone"
+    },
+    {
+      "coordinates": [
+        16,
+        1552
+      ],
+      "flag": "",
+      "name": "Check One"
+    },
+    {
+      "coordinates": [
+        16,
+        1616
+      ],
+      "flag": "",
+      "name": "Check Two"
+    },
+    {
+      "coordinates": [
+        16,
+        1680
+      ],
+      "flag": "",
+      "name": "Check Three"
+    },
+    {
+      "coordinates": [
+        16,
+        1744
+      ],
+      "flag": "",
+      "name": "Check Four"
+    },
+    {
+      "coordinates": [
+        16,
+        1808
+      ],
+      "flag": "",
+      "name": "Board Edge"
+    },
+    {
+      "coordinates": [
+        16,
+        1872
+      ],
+      "flag": "",
+      "name": "Pixel Coast"
+    },
+    {
+      "coordinates": [
+        16,
+        1936
+      ],
+      "flag": "",
+      "name": "Mono March"
+    },
+    {
+      "coordinates": [
+        16,
+        2000
+      ],
+      "flag": "",
+      "name": "Final Square"
+    }
+  ],
+  "translation_key": "map.grid"
+}

@@ -9,6 +9,7 @@ import {
   AllPlayers,
   BuildableUnit,
   Game,
+  GameMapType,
   GameType,
   GameUpdates,
   NameViewData,
@@ -108,13 +109,16 @@ export class GameRunner {
     if (this.game.config().gameConfig().gameType !== GameType.Singleplayer) {
       this.game.addExecution(new SpawnTimerExecution());
     }
-    if (this.game.config().spawnNations()) {
+    // Chess 2 (Grid): solo sandbox — no nations or bot tribes.
+    const isGrid =
+      this.game.config().gameConfig().gameMap === GameMapType.Grid;
+    if (!isGrid && this.game.config().spawnNations()) {
       this.game.addExecution(...this.execManager.nationExecutions());
     }
     if (this.game.config().isRandomSpawn()) {
       this.game.addExecution(...this.execManager.spawnPlayers());
     }
-    if (this.game.config().bots() > 0) {
+    if (!isGrid && this.game.config().bots() > 0) {
       this.game.addExecution(
         ...this.execManager.spawnTribes(this.game.config().bots()),
       );
