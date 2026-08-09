@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Workshop / production factory glyph  fills the cell -->
+  <path fill="#ffffff"
+    d="M6 54V28l10-8v6l8-6v6l8-6v8h4V14h6v12h4V22l12 10v22H6zm4-4h40V36.5L38 28v8h-6V24l-8 6v8h-6V28l-8 6v16zm28-26h4v4h-4v-4zm0 8h4v4h-4v-4zm-10 0h4v4h-4v-4z"/>
+</svg>

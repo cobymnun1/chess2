@@ -8,6 +8,7 @@ import { AllianceRequestExecution } from "./alliance/AllianceRequestExecution";
 import { BreakAllianceExecution } from "./alliance/BreakAllianceExecution";
 import { AttackExecution } from "./AttackExecution";
 import { BoatRetreatExecution } from "./BoatRetreatExecution";
+import { ChessFactoryBuildExecution } from "./ChessFactoryBuildExecution";
 import { ChessMoveExecution } from "./ChessMoveExecution";
 import { ConstructionExecution } from "./ConstructionExecution";
 import { DeleteUnitExecution } from "./DeleteUnitExecution";
@@ -74,6 +75,12 @@ export class Executor {
         return new MoveWarshipExecution(player, intent.unitIds, intent.tile);
       case "move_chess_piece":
         return new ChessMoveExecution(player, intent.unitId, intent.tile);
+      case "chess_factory_build":
+        return new ChessFactoryBuildExecution(
+          player,
+          intent.unitId,
+          intent.productType,
+        );
       case "spawn":
         // fromIntent: this one came off the wire, so it is subject to the
         // spawn-phase gate that internal spawns are not.

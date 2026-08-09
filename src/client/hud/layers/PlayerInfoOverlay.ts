@@ -43,6 +43,7 @@ const traitorIcon = assetUrl("images/TraitorIcon.svg");
 const warshipIcon = assetUrl("images/BattleshipIconWhite.svg");
 const cityIcon = assetUrl("images/ChessKingIconWhite.svg");
 const factoryIcon = assetUrl("images/ChessQueenIconWhite.svg");
+const workshopIcon = assetUrl("images/ChessFactoryIconWhite.svg");
 const goldCoinIcon = assetUrl("images/GoldCoinIcon.svg");
 const missileSiloIcon = assetUrl("images/ChessKnightIconWhite.svg");
 const portIcon = assetUrl("images/ChessRookIconWhite.svg");
@@ -523,6 +524,7 @@ export class PlayerInfoOverlay extends LitElement implements Controller {
           <div class="flex gap-0.5 lg:gap-1 items-center mt-0.5">
             ${this.displayUnitCount(player, UnitType.City, cityIcon)}
             ${this.displayUnitCount(player, UnitType.Factory, factoryIcon)}
+            ${this.displayUnitCount(player, UnitType.Workshop, workshopIcon)}
             ${this.displayUnitCount(player, UnitType.Port, portIcon)}
             ${this.displayUnitCount(
               player,

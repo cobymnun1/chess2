@@ -46,6 +46,9 @@ export function attachChessPieceBehavior(
     case UnitType.Factory:
       mg.addExecution(new FactoryExecution(unit));
       break;
+    case UnitType.Workshop:
+      // Production handled by ChessFactoryBuildExecution; no OF factory rails.
+      break;
   }
 }
 

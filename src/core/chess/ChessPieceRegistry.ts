@@ -1,5 +1,6 @@
 import { Game, Player, Unit, UnitType } from "../game/Game";
 import {
+  ChessFactoryProduct,
   ChessPieceUnitType,
   isChessPieceType,
 } from "./ChessConstants";
@@ -13,6 +14,12 @@ export interface ChessPieceRecord {
   cy: number;
 }
 
+export interface ChessFactoryBuildState {
+  productType: ChessFactoryProduct;
+  readyTick: number;
+  startTick: number;
+}
+
 type PlayerArmy = Map<number, ChessPieceRecord>;
 
 /** Stable piece armies keyed by player id. Survives unit delete/rebuild. */
@@ -20,6 +27,9 @@ const armies = new Map<string, PlayerArmy>();
 
 /** Cooldown keyed by playerId:pieceId (unit ids change on teleport). */
 const lastMoveTickByPiece = new Map<string, number>();
+
+/** In-progress Workshop builds keyed by playerId:pieceId. */
+const factoryBuilds = new Map<string, ChessFactoryBuildState>();
 
 function getArmy(playerId: string): PlayerArmy {
   let army = armies.get(playerId);
@@ -40,6 +50,9 @@ export function clearChessArmy(playerId: string): void {
   for (const k of [...lastMoveTickByPiece.keys()]) {
     if (k.startsWith(prefix)) lastMoveTickByPiece.delete(k);
   }
+  for (const k of [...factoryBuilds.keys()]) {
+    if (k.startsWith(prefix)) factoryBuilds.delete(k);
+  }
 }
 
 export function registerChessPiece(
@@ -54,6 +67,7 @@ export function unregisterChessPiece(
   pieceId: number,
 ): void {
   getArmy(playerId).delete(pieceId);
+  factoryBuilds.delete(pieceCooldownKey(playerId, pieceId));
 }
 
 export function getChessPieceByUnitId(
@@ -104,6 +118,34 @@ export function chessPieceIdCooldownRemaining(
   const last =
     lastMoveTickByPiece.get(pieceCooldownKey(playerId, pieceId)) ?? -Infinity;
   return Math.max(0, last + cooldownTicks - currentTick);
+}
+
+export function startChessFactoryBuild(
+  playerId: string,
+  pieceId: number,
+  productType: ChessFactoryProduct,
+  startTick: number,
+  readyTick: number,
+): void {
+  factoryBuilds.set(pieceCooldownKey(playerId, pieceId), {
+    productType,
+    startTick,
+    readyTick,
+  });
+}
+
+export function getChessFactoryBuild(
+  playerId: string,
+  pieceId: number,
+): ChessFactoryBuildState | undefined {
+  return factoryBuilds.get(pieceCooldownKey(playerId, pieceId));
+}
+
+export function cancelChessFactoryBuild(
+  playerId: string,
+  pieceId: number,
+): void {
+  factoryBuilds.delete(pieceCooldownKey(playerId, pieceId));
 }
 
 export function listChessPieces(playerId: string): ChessPieceRecord[] {

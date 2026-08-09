@@ -34,6 +34,7 @@ const rookIcon = assetUrl("images/ChessRookIconWhite.svg");
 const bishopIcon = assetUrl("images/ChessBishopIconWhite.svg");
 const knightIcon = assetUrl("images/ChessKnightIconWhite.svg");
 const pawnIcon = assetUrl("images/ChessPawnIconWhite.svg");
+const workshopIcon = assetUrl("images/ChessFactoryIconWhite.svg");
 
 export interface BuildItemDisplay {
   unitType: PlayerBuildableUnitType;
@@ -85,6 +86,13 @@ export const buildTable: BuildItemDisplay[][] = [
       icon: pawnIcon,
       description: "build_menu.desc.sam_launcher",
       key: "unit_type.sam_launcher",
+      countable: true,
+    },
+    {
+      unitType: UnitType.Workshop,
+      icon: workshopIcon,
+      description: "build_menu.desc.workshop",
+      key: "unit_type.workshop",
       countable: true,
     },
   ],

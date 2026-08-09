@@ -111,6 +111,53 @@ export function chessPieceOnCell(
   return unitOnCell(mg, cx, cy);
 }
 
+/** Eight neighboring chess cells (Chebyshev ring of 1), unsorted. */
+export function adjacentChessCells(cx: number, cy: number): ChessCell[] {
+  const out: ChessCell[] = [];
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      if (dx === 0 && dy === 0) continue;
+      out.push({ cx: cx + dx, cy: cy + dy });
+    }
+  }
+  return out;
+}
+
+/** True if the cell is in-bounds and has no chess piece. */
+export function isChessCellOpen(
+  mg: ChessBoardView,
+  cx: number,
+  cy: number,
+): boolean {
+  if (!cellInBounds(mg, cx, cy)) return false;
+  if (tilesInCell(mg, cx, cy).length === 0) return false;
+  return unitOnCell(mg, cx, cy) === null;
+}
+
+/**
+ * Closest empty adjacent cell for Workshop deposits.
+ * All neighbors are Chebyshev-1; tie-break by (cy, cx) ascending.
+ */
+export function findFactoryDepositCell(
+  mg: ChessBoardView,
+  fromCx: number,
+  fromCy: number,
+): ChessCell | null {
+  const open = adjacentChessCells(fromCx, fromCy)
+    .filter((c) => isChessCellOpen(mg, c.cx, c.cy))
+    .sort((a, b) => a.cy - b.cy || a.cx - b.cx);
+  return open[0] ?? null;
+}
+
+/** True if Workshop has at least one open neighbor to start/finish a build. */
+export function workshopHasOpenNeighbor(
+  mg: ChessBoardView,
+  cx: number,
+  cy: number,
+): boolean {
+  return findFactoryDepositCell(mg, cx, cy) !== null;
+}
+
 function clearPath(
   mg: ChessBoardView,
   from: ChessCell,
@@ -374,6 +421,8 @@ export function legalMovesForPiece(
       );
     case UnitType.City: // King — any direction, Chebyshev ≤ 3
       return chebyshevMoves(mg, ownerId, from, CHESS_MOVE_RANGE.king);
+    case UnitType.Workshop: // Factory — one step any direction
+      return chebyshevMoves(mg, ownerId, from, CHESS_MOVE_RANGE.workshop);
     case UnitType.Port: // Rook
       return slideMoves(
         mg,
@@ -479,7 +528,7 @@ export function slidingPathClear(
   to: ChessCell,
 ): boolean {
   const type = unit.type();
-  if (type === UnitType.MissileSilo || type === UnitType.City) {
+  if (type === UnitType.MissileSilo || type === UnitType.City || type === UnitType.Workshop) {
     return true;
   }
   const from = tileToCell(mg, unit.tile());

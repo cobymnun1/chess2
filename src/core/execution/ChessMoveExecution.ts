@@ -11,6 +11,7 @@ import {
   tilesInCell,
 } from "../chess/ChessMoves";
 import {
+  cancelChessFactoryBuild,
   chessPieceIdCooldownRemaining,
   getChessPieceByUnitId,
   setChessPieceMoveTick,
@@ -134,6 +135,11 @@ export class ChessMoveExecution implements Execution {
     }
 
     const from = tileToCell(mg, unit.tile());
+
+    // Moving a Workshop cancels any in-progress production.
+    if (rec.unitType === UnitType.Workshop) {
+      cancelChessFactoryBuild(playerId, rec.pieceId);
+    }
 
     // Capture: any enemy chess piece on dest is removed from play + registry.
     // Refuse if another friendly piece already sits there (no stacking).

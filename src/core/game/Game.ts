@@ -193,6 +193,8 @@ export enum UnitType {
   MIRVWarhead = "MIRV Warhead",
   Train = "Train",
   Factory = "Factory",
+  /** Chess 2 production building (not the Queen / Factory piece). */
+  Workshop = "Workshop",
 }
 
 export enum TrainType {
@@ -222,6 +224,7 @@ export const Structures = unitTypeGroup([
   UnitType.MissileSilo,
   UnitType.Port,
   UnitType.Factory,
+  UnitType.Workshop,
 ] as const);
 
 export const BuildMenus = unitTypeGroup([
@@ -284,6 +287,8 @@ export interface UnitParamsMap {
   };
 
   [UnitType.Factory]: Record<string, never>;
+
+  [UnitType.Workshop]: Record<string, never>;
 
   [UnitType.MissileSilo]: Record<string, never>;
 

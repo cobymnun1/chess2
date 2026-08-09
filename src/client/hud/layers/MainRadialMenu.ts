@@ -1,6 +1,7 @@
 import { assetUrl } from "../../../core/AssetUrls";
 import { EventBus } from "../../../core/EventBus";
-import { PlayerActions } from "../../../core/game/Game";
+import { tileToCell } from "../../../core/chess/ChessMoves";
+import { GameMapType, PlayerActions, UnitType } from "../../../core/game/Game";
 import { TileRef } from "../../../core/game/GameMap";
 import { Controller } from "../../Controller";
 import { TransformHandler } from "../../TransformHandler";
@@ -82,22 +83,38 @@ export class MainRadialMenu implements Controller {
       if (!this.game.isValidCoord(worldCoords.x, worldCoords.y)) {
         return;
       }
-      if (this.game.myPlayer() === null) {
+      const myPlayer = this.game.myPlayer();
+      if (myPlayer === null) {
         return;
       }
       this.clickedTile = this.game.ref(worldCoords.x, worldCoords.y);
-      this.game
-        .myPlayer()!
-        .actions(this.clickedTile)
-        .then((actions) => {
-          this.updatePlayerActions(
-            this.game.myPlayer()!,
-            actions,
-            this.clickedTile!,
-            event.x,
-            event.y,
-          );
-        });
+
+      // Chess Workshop: production radial is handled by ChessFactoryController.
+      if (
+        this.game.config().gameConfig().gameMap === GameMapType.Grid &&
+        this.isOwnWorkshop(myPlayer, this.clickedTile)
+      ) {
+        return;
+      }
+
+      myPlayer.actions(this.clickedTile).then((actions) => {
+        this.updatePlayerActions(
+          myPlayer,
+          actions,
+          this.clickedTile!,
+          event.x,
+          event.y,
+        );
+      });
+    });
+  }
+
+  private isOwnWorkshop(myPlayer: PlayerView, tile: TileRef): boolean {
+    const cell = tileToCell(this.game, tile);
+    return myPlayer.units(UnitType.Workshop).some((u) => {
+      if (!u.isActive()) return false;
+      const c = tileToCell(this.game, u.tile());
+      return c.cx === cell.cx && c.cy === cell.cy;
     });
   }
 

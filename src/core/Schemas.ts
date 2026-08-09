@@ -47,6 +47,7 @@ export type Intent =
   | QuickChatIntent
   | MoveWarshipIntent
   | MoveChessPieceIntent
+  | ChessFactoryBuildIntent
   | MarkDisconnectedIntent
   | EmbargoAllIntent
   | UpgradeStructureIntent
@@ -76,6 +77,9 @@ export type UpgradeStructureIntent = z.infer<
 >;
 export type MoveWarshipIntent = z.infer<typeof MoveWarshipIntentSchema>;
 export type MoveChessPieceIntent = z.infer<typeof MoveChessPieceIntentSchema>;
+export type ChessFactoryBuildIntent = z.infer<
+  typeof ChessFactoryBuildIntentSchema
+>;
 export type QuickChatIntent = z.infer<typeof QuickChatIntentSchema>;
 export type MarkDisconnectedIntent = z.infer<
   typeof MarkDisconnectedIntentSchema
@@ -553,6 +557,14 @@ export const MoveChessPieceIntentSchema = z.object({
   tile: z.number().int().nonnegative(),
 });
 
+export const ChessFactoryBuildIntentSchema = z.object({
+  type: z.literal("chess_factory_build"),
+  unitId: z.number().int().nonnegative(),
+  // Accept any UnitType on the wire; execution rejects non-products.
+  // (Avoids fragile partial enums if clients/servers briefly diverge.)
+  productType: z.enum(UnitType),
+});
+
 export const DeleteUnitIntentSchema = z.object({
   type: z.literal("delete_unit"),
   unitId: z.number().int().nonnegative(),
@@ -614,6 +626,7 @@ export const IntentSchema = z.discriminatedUnion("type", [
   EmbargoAllIntentSchema,
   MoveWarshipIntentSchema,
   MoveChessPieceIntentSchema,
+  ChessFactoryBuildIntentSchema,
   QuickChatIntentSchema,
   AllianceExtensionIntentSchema,
   DeleteUnitIntentSchema,

@@ -14,17 +14,35 @@ export const CHESS_PIECE_TYPES = [
   UnitType.DefensePost, // Bishop
   UnitType.MissileSilo, // Knight
   UnitType.SAMLauncher, // Pawn
+  UnitType.Workshop, // Production factory
 ] as const;
 
 export type ChessPieceUnitType = (typeof CHESS_PIECE_TYPES)[number];
+
+/** Products a Workshop can manufacture (no king). */
+export const CHESS_FACTORY_PRODUCTS = [
+  UnitType.Factory, // Queen
+  UnitType.Port, // Rook
+  UnitType.MissileSilo, // Knight
+  UnitType.DefensePost, // Bishop
+  UnitType.SAMLauncher, // Pawn
+] as const;
+
+export type ChessFactoryProduct = (typeof CHESS_FACTORY_PRODUCTS)[number];
 
 export function isChessPieceType(type: UnitType): type is ChessPieceUnitType {
   return (CHESS_PIECE_TYPES as readonly UnitType[]).includes(type);
 }
 
+export function isChessFactoryProduct(
+  type: UnitType,
+): type is ChessFactoryProduct {
+  return (CHESS_FACTORY_PRODUCTS as readonly UnitType[]).includes(type);
+}
+
 /**
  * Move cooldowns in ticks (10 ticks/s).
- * Pawn 3s, bishop/knight 5s, rook 8s, queen/king 10s.
+ * Pawn 3s, bishop/knight 5s, rook 8s, queen/king 10s, workshop 2s.
  */
 export const CHESS_MOVE_COOLDOWN: Record<ChessPieceUnitType, number> = {
   [UnitType.City]: 100, // King — 10s
@@ -33,6 +51,7 @@ export const CHESS_MOVE_COOLDOWN: Record<ChessPieceUnitType, number> = {
   [UnitType.DefensePost]: 50, // Bishop — 5s
   [UnitType.MissileSilo]: 50, // Knight — 5s
   [UnitType.SAMLauncher]: 30, // Pawn — 3s
+  [UnitType.Workshop]: 20, // Factory — 2s
 };
 
 /** Max move distance in chess cells. */
@@ -43,7 +62,17 @@ export const CHESS_MOVE_RANGE = {
   rook: 16,
   queen: 16,
   knightMaxManhattan: 6,
+  workshop: 1,
 } as const;
+
+/** Workshop build duration in ticks (10 ticks/s). */
+export const CHESS_FACTORY_BUILD_TICKS: Record<ChessFactoryProduct, number> = {
+  [UnitType.Factory]: 600, // Queen — 60s
+  [UnitType.Port]: 450, // Rook — 45s
+  [UnitType.MissileSilo]: 300, // Knight — 30s
+  [UnitType.DefensePost]: 300, // Bishop — 30s
+  [UnitType.SAMLauncher]: 150, // Pawn — 15s
+};
 
 /**
  * 6×6 starting formation (row = local cy, col = local cx).
@@ -51,33 +80,27 @@ export const CHESS_MOVE_RANGE = {
  * ```
  * P P P P P P
  * P R H B R P
- * P B K * H P
- * P H * Q B P
+ * P B K F H P
+ * P H F Q B P
  * P R B H R P
  * P P P P P P
  * ```
- *
- * Outer ring of pawns; inner square has corner rooks, horses and bishops on
- * the sides, king/queen on a diagonal of the center 2×2 with two blanks (*)
- * on the other (reserved for a future piece).
- *
- * `null` = intentionally empty square.
  */
 export const CHESS_START_FORMATION: ReadonlyArray<
   ReadonlyArray<ChessPieceUnitType | null>
 > = (() => {
   const R = UnitType.Port;
-  const N = UnitType.MissileSilo; // Horse
+  const N = UnitType.MissileSilo;
   const B = UnitType.DefensePost;
   const Q = UnitType.Factory;
   const K = UnitType.City;
   const P = UnitType.SAMLauncher;
-  const _ = null;
+  const F = UnitType.Workshop;
   return [
     [P, P, P, P, P, P],
     [P, R, N, B, R, P],
-    [P, B, K, _, N, P],
-    [P, N, _, Q, B, P],
+    [P, B, K, F, N, P],
+    [P, N, F, Q, B, P],
     [P, R, B, N, R, P],
     [P, P, P, P, P, P],
   ];

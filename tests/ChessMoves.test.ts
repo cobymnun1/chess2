@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  CHESS_FACTORY_BUILD_TICKS,
   CHESS_MOVE_COOLDOWN,
   CHESS_MOVE_RANGE,
   CHESS_START_FORMATION,
@@ -9,11 +10,13 @@ import {
   ChessBoardView,
   ChessCell,
   ChessPieceRef,
+  findFactoryDepositCell,
   isVariableKnightOffset,
   knightLeapOffsets,
   knightLPath,
   legalMovesForPiece,
   truncatePathAt,
+  workshopHasOpenNeighbor,
 } from "../src/core/chess/ChessMoves";
 import { UnitType } from "../src/core/game/Game";
 import { TileRef } from "../src/core/game/GameMap";
@@ -71,6 +74,17 @@ describe("ChessConstants cooldowns", () => {
     expect(CHESS_MOVE_COOLDOWN[UnitType.Port]).toBe(80);
     expect(CHESS_MOVE_COOLDOWN[UnitType.Factory]).toBe(100);
     expect(CHESS_MOVE_COOLDOWN[UnitType.City]).toBe(100);
+    expect(CHESS_MOVE_COOLDOWN[UnitType.Workshop]).toBe(20);
+  });
+});
+
+describe("CHESS_FACTORY_BUILD_TICKS", () => {
+  test("match product build times at 10 ticks/s", () => {
+    expect(CHESS_FACTORY_BUILD_TICKS[UnitType.Factory]).toBe(600);
+    expect(CHESS_FACTORY_BUILD_TICKS[UnitType.Port]).toBe(450);
+    expect(CHESS_FACTORY_BUILD_TICKS[UnitType.MissileSilo]).toBe(300);
+    expect(CHESS_FACTORY_BUILD_TICKS[UnitType.DefensePost]).toBe(300);
+    expect(CHESS_FACTORY_BUILD_TICKS[UnitType.SAMLauncher]).toBe(150);
   });
 });
 
@@ -96,10 +110,10 @@ describe("CHESS_START_FORMATION", () => {
       UnitType.Port,
       UnitType.SAMLauncher,
     ]);
-    // Center: K * / * Q
+    // Center: K F / F Q
     expect(CHESS_START_FORMATION[2][2]).toBe(UnitType.City);
-    expect(CHESS_START_FORMATION[2][3]).toBeNull();
-    expect(CHESS_START_FORMATION[3][2]).toBeNull();
+    expect(CHESS_START_FORMATION[2][3]).toBe(UnitType.Workshop);
+    expect(CHESS_START_FORMATION[3][2]).toBe(UnitType.Workshop);
     expect(CHESS_START_FORMATION[3][3]).toBe(UnitType.Factory);
 
     let pieces = 0;
@@ -110,8 +124,8 @@ describe("CHESS_START_FORMATION", () => {
         else pieces++;
       }
     }
-    expect(blanks).toBe(2);
-    expect(pieces).toBe(34);
+    expect(blanks).toBe(0);
+    expect(pieces).toBe(36);
   });
 });
 
@@ -265,5 +279,69 @@ describe("legalMovesForPiece ranges", () => {
     expect(set.has("21,22")).toBe(true); // (1,2)
     expect(set.has("22,24")).toBe(true); // (2,4)
     expect(set.has("23,23")).toBe(false); // (3,3) diagonal
+  });
+
+  test("workshop moves one step in any direction", () => {
+    const workshop = pieceAt(board, UnitType.Workshop, 20, 20);
+    const moves = legalMovesForPiece(board, workshop);
+    expect(moves.length).toBe(8);
+    for (const m of moves) {
+      const dx = Math.abs(m.cx - 20);
+      const dy = Math.abs(m.cy - 20);
+      expect(Math.max(dx, dy)).toBe(1);
+    }
+  });
+});
+
+describe("factory deposit hold semantics", () => {
+  test("no open neighbor means hold (helper reports null, not a cancel signal)", () => {
+    const occupants = [{ cx: 5, cy: 5, ownerId: "p1", type: UnitType.Workshop }];
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (dx === 0 && dy === 0) continue;
+        occupants.push({
+          cx: 5 + dx,
+          cy: 5 + dy,
+          ownerId: "p1",
+          type: UnitType.SAMLauncher,
+        });
+      }
+    }
+    const board = makeBoard(10, 10, occupants);
+    // Execution keeps ticking until this becomes non-null.
+    expect(findFactoryDepositCell(board, 5, 5)).toBeNull();
+  });
+});
+
+describe("factory deposit helpers", () => {
+  test("findFactoryDepositCell picks nearest empty neighbor (cy, cx)", () => {
+    const board = makeBoard(10, 10, [
+      { cx: 5, cy: 5, ownerId: "p1", type: UnitType.Workshop },
+      { cx: 4, cy: 4, ownerId: "p1", type: UnitType.SAMLauncher },
+      { cx: 5, cy: 4, ownerId: "p1", type: UnitType.SAMLauncher },
+      { cx: 6, cy: 4, ownerId: "p1", type: UnitType.SAMLauncher },
+      { cx: 4, cy: 5, ownerId: "p1", type: UnitType.SAMLauncher },
+    ]);
+    // Open: (6,5), (4,6), (5,6), (6,6) — lowest cy then cx → (6,5)
+    expect(findFactoryDepositCell(board, 5, 5)).toEqual({ cx: 6, cy: 5 });
+    expect(workshopHasOpenNeighbor(board, 5, 5)).toBe(true);
+  });
+
+  test("returns null when all neighbors occupied", () => {
+    const occupants = [{ cx: 5, cy: 5, ownerId: "p1", type: UnitType.Workshop }];
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (dx === 0 && dy === 0) continue;
+        occupants.push({
+          cx: 5 + dx,
+          cy: 5 + dy,
+          ownerId: "p1",
+          type: UnitType.SAMLauncher,
+        });
+      }
+    }
+    const board = makeBoard(10, 10, occupants);
+    expect(findFactoryDepositCell(board, 5, 5)).toBeNull();
+    expect(workshopHasOpenNeighbor(board, 5, 5)).toBe(false);
   });
 });

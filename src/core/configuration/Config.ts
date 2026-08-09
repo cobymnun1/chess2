@@ -483,6 +483,17 @@ export class Config {
           upgradable: true,
         };
         break;
+      case UnitType.Workshop:
+        info = {
+          cost: this.costWrapper(
+            (numUnits: number) =>
+              Math.min(1_000_000, Math.pow(2, numUnits) * 125_000),
+            UnitType.Workshop,
+          ),
+          constructionDuration: this.instantBuild() ? 0 : 2 * 10,
+          upgradable: false,
+        };
+        break;
       case UnitType.Train:
         info = {
           cost: () => 0n,

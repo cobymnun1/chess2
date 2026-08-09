@@ -23,6 +23,7 @@ import {
   UT_TRAIN,
   UT_TRANSPORT,
   UT_WARSHIP,
+  UT_WORKSHOP,
 } from "../../types";
 import type { RenderSettings } from "../RenderSettings";
 import { createProgram, shaderSrc } from "../utils/GlUtils";
@@ -46,6 +47,7 @@ const LIGHT_CONFIGS: Record<string, LightConfig> = {
   [UT_CITY]: { r: 1.0, g: 0.85, b: 0.5, radius: 18, intensity: 1.2 },
   [UT_PORT]: { r: 1.0, g: 0.75, b: 0.4, radius: 12, intensity: 1.0 },
   [UT_FACTORY]: { r: 1.0, g: 0.6, b: 0.3, radius: 12, intensity: 1.0 },
+  [UT_WORKSHOP]: { r: 1.0, g: 0.55, b: 0.25, radius: 12, intensity: 1.0 },
   [UT_DEFENSE_POST]: { r: 0.8, g: 0.85, b: 1.0, radius: 10, intensity: 0.9 },
   [UT_SAM_LAUNCHER]: { r: 0.8, g: 0.85, b: 1.0, radius: 10, intensity: 0.9 },
   [UT_MISSILE_SILO]: { r: 1.0, g: 0.4, b: 0.2, radius: 10, intensity: 0.9 },

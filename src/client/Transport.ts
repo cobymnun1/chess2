@@ -188,6 +188,13 @@ export class MoveChessPieceIntentEvent implements GameEvent {
   ) {}
 }
 
+export class ChessFactoryBuildIntentEvent implements GameEvent {
+  constructor(
+    public readonly unitId: number,
+    public readonly productType: UnitType,
+  ) {}
+}
+
 export class SendKickPlayerIntentEvent implements GameEvent {
   constructor(public readonly target: string) {}
 }
@@ -281,6 +288,10 @@ export class Transport {
 
     this.eventBus.on(MoveChessPieceIntentEvent, (e) => {
       this.onMoveChessPieceEvent(e);
+    });
+
+    this.eventBus.on(ChessFactoryBuildIntentEvent, (e) => {
+      this.onChessFactoryBuildEvent(e);
     });
 
     this.eventBus.on(SendDeleteUnitIntentEvent, (e) =>
@@ -676,6 +687,14 @@ export class Transport {
       type: "move_chess_piece",
       unitId: event.unitId,
       tile: event.tile,
+    });
+  }
+
+  private onChessFactoryBuildEvent(event: ChessFactoryBuildIntentEvent) {
+    this.sendIntent({
+      type: "chess_factory_build",
+      unitId: event.unitId,
+      productType: event.productType,
     });
   }
 
