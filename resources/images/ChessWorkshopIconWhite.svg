@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Workshop smithy: pitched roof, chimney, arched doorway -->
+  <path fill="#ffffff" fill-rule="evenodd" d="
+    M42 4h12v20H42V4z
+    M2 30L32 4l28 22v34H4V30z
+    M22 34c0-6 4.5-10 10-10s10 4 10 10v26H22V34z
+  "/>
+</svg>

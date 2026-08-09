@@ -34,7 +34,7 @@ const rookIcon = assetUrl("images/ChessRookIconWhite.svg");
 const bishopIcon = assetUrl("images/ChessBishopIconWhite.svg");
 const knightIcon = assetUrl("images/ChessKnightIconWhite.svg");
 const pawnIcon = assetUrl("images/ChessPawnIconWhite.svg");
-const workshopIcon = assetUrl("images/ChessFactoryIconWhite.svg");
+const workshopIcon = assetUrl("images/ChessWorkshopIconWhite.svg");
 
 export interface BuildItemDisplay {
   unitType: PlayerBuildableUnitType;

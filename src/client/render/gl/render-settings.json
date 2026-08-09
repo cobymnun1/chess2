@@ -121,11 +121,11 @@
     "railThickness": 1
   },
   "structure": {
-    "iconSize": 60,
-    "dotsZoomThreshold": 1.2,
-    "dotScale": 0.3,
-    "iconScaleFactorZoomedOut": 5,
-    "iconGrowZoom": 7,
+    "iconSize": 64,
+    "dotsZoomThreshold": 0,
+    "dotScale": 1,
+    "iconScaleFactorZoomedOut": 1.35,
+    "iconGrowZoom": 3,
     "shapes": {
       "City": {
         "scale": 1.35,

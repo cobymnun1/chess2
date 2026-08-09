@@ -26,7 +26,7 @@ const rookIcon = assetUrl("images/ChessRookIconWhite.svg");
 const knightIcon = assetUrl("images/ChessKnightIconWhite.svg");
 const bishopIcon = assetUrl("images/ChessBishopIconWhite.svg");
 const pawnIcon = assetUrl("images/ChessPawnIconWhite.svg");
-const factoryIcon = assetUrl("images/ChessFactoryIconWhite.svg");
+const factoryIcon = assetUrl("images/ChessWorkshopIconWhite.svg");
 
 const PRODUCT_ICONS: Record<ChessFactoryProduct, string> = {
   [UnitType.Factory]: queenIcon,
