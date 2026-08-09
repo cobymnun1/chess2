@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   CHESS_MOVE_COOLDOWN,
   CHESS_MOVE_RANGE,
+  CHESS_START_FORMATION,
 } from "../src/core/chess/ChessConstants";
 import {
   bestKnightLanding,
@@ -70,6 +71,47 @@ describe("ChessConstants cooldowns", () => {
     expect(CHESS_MOVE_COOLDOWN[UnitType.Port]).toBe(80);
     expect(CHESS_MOVE_COOLDOWN[UnitType.Factory]).toBe(100);
     expect(CHESS_MOVE_COOLDOWN[UnitType.City]).toBe(100);
+  });
+});
+
+describe("CHESS_START_FORMATION", () => {
+  test("matches chess2.md 6×6 layout", () => {
+    expect(CHESS_START_FORMATION).toHaveLength(6);
+    for (const row of CHESS_START_FORMATION) {
+      expect(row).toHaveLength(6);
+    }
+    // Outer pawn rows
+    expect(CHESS_START_FORMATION[0].every((c) => c === UnitType.SAMLauncher)).toBe(
+      true,
+    );
+    expect(CHESS_START_FORMATION[5].every((c) => c === UnitType.SAMLauncher)).toBe(
+      true,
+    );
+    // Inner pattern row 1: P R H B R P
+    expect(CHESS_START_FORMATION[1]).toEqual([
+      UnitType.SAMLauncher,
+      UnitType.Port,
+      UnitType.MissileSilo,
+      UnitType.DefensePost,
+      UnitType.Port,
+      UnitType.SAMLauncher,
+    ]);
+    // Center: K * / * Q
+    expect(CHESS_START_FORMATION[2][2]).toBe(UnitType.City);
+    expect(CHESS_START_FORMATION[2][3]).toBeNull();
+    expect(CHESS_START_FORMATION[3][2]).toBeNull();
+    expect(CHESS_START_FORMATION[3][3]).toBe(UnitType.Factory);
+
+    let pieces = 0;
+    let blanks = 0;
+    for (const row of CHESS_START_FORMATION) {
+      for (const cell of row) {
+        if (cell === null) blanks++;
+        else pieces++;
+      }
+    }
+    expect(blanks).toBe(2);
+    expect(pieces).toBe(34);
   });
 });
 

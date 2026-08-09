@@ -1,7 +1,7 @@
 import {
-  CHESS_BACK_RANK,
   CHESS_BOARD_SIZE,
   CHESS_CELL,
+  CHESS_START_FORMATION,
   ChessPieceUnitType,
   isChessPieceType,
 } from "../chess/ChessConstants";
@@ -50,7 +50,7 @@ export function attachChessPieceBehavior(
 }
 
 /**
- * Places a standard chess army for the human player on Grid.
+ * Places the 6×6 chess army for the human player on Grid.
  * Calls buildUnit directly (bypasses canBuild spacing / Port shore rules)
  * and refunds gold so setup is free.
  */
@@ -61,7 +61,7 @@ export class ChessSetupExecution implements Execution {
 
   constructor(
     private readonly player: Player,
-    /** Top-left chess cell of the 8×8 board. */
+    /** Top-left chess cell of the army footprint. */
     private readonly originCx: number,
     private readonly originCy: number,
   ) {}
@@ -93,14 +93,25 @@ export class ChessSetupExecution implements Execution {
     clearChessArmy(this.player.id());
     this.nextPieceId = 0;
 
-    for (let file = 0; file < CHESS_BOARD_SIZE; file++) {
-      // Back rank at bottom of board (highest cy).
-      const backCy = this.originCy + CHESS_BOARD_SIZE - 1;
-      const pawnCy = this.originCy + CHESS_BOARD_SIZE - 2;
-      const cx = this.originCx + file;
+    // Own the full 6×6 footprint (including intentional blanks).
+    for (let ly = 0; ly < CHESS_BOARD_SIZE; ly++) {
+      for (let lx = 0; lx < CHESS_BOARD_SIZE; lx++) {
+        const cx = this.originCx + lx;
+        const cy = this.originCy + ly;
+        for (const t of tilesInCell(this.mg, cx, cy)) {
+          if (this.mg.owner(t) !== this.player) {
+            this.player.conquer(t);
+          }
+        }
+      }
+    }
 
-      this.placePiece(CHESS_BACK_RANK[file], cx, backCy);
-      this.placePiece(UnitType.SAMLauncher, cx, pawnCy);
+    for (let ly = 0; ly < CHESS_BOARD_SIZE; ly++) {
+      for (let lx = 0; lx < CHESS_BOARD_SIZE; lx++) {
+        const type = CHESS_START_FORMATION[ly][lx];
+        if (type === null) continue;
+        this.placePiece(type, this.originCx + lx, this.originCy + ly);
+      }
     }
     this.active = false;
   }
@@ -109,12 +120,6 @@ export class ChessSetupExecution implements Execution {
 
   private placePiece(type: ChessPieceUnitType, cx: number, cy: number): void {
     const tile = cellCenterTile(this.mg, cx, cy);
-    // Ensure ownership of the cell before placing.
-    for (const t of tilesInCell(this.mg, cx, cy)) {
-      if (this.mg.owner(t) !== this.player) {
-        this.player.conquer(t);
-      }
-    }
 
     // No stacking: clear any units already on this chess cell.
     for (const u of [...this.mg.units()]) {
@@ -149,7 +154,7 @@ export class ChessSetupExecution implements Execution {
   }
 }
 
-/** Compute a board origin snapped so the click is near the center of an 8×8. */
+/** Compute a board origin snapped so the click is near the center of the army. */
 export function chessBoardOriginFromTile(
   mg: Game,
   center: TileRef,
@@ -175,24 +180,16 @@ export function chessBoardOriginFromTile(
   return { originCx, originCy };
 }
 
-/** Tiles under the starting army only (back rank + pawn rank) — not the empty board. */
+/** All land tiles under the 6×6 starting army footprint (including blanks). */
 export function chessArmyTiles(
   mg: Game,
   originCx: number,
   originCy: number,
 ): TileRef[] {
-  const tiles: TileRef[] = [];
-  const backCy = originCy + CHESS_BOARD_SIZE - 1;
-  const pawnCy = originCy + CHESS_BOARD_SIZE - 2;
-  for (const cy of [backCy, pawnCy]) {
-    for (let file = 0; file < CHESS_BOARD_SIZE; file++) {
-      tiles.push(...tilesInCell(mg, originCx + file, cy));
-    }
-  }
-  return tiles;
+  return chessBoardTiles(mg, originCx, originCy);
 }
 
-/** All tiles belonging to an 8×8 chess board starting at origin cell. */
+/** All tiles belonging to the army footprint starting at origin cell. */
 export function chessBoardTiles(
   mg: Game,
   originCx: number,
